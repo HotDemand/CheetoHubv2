@@ -1,4 +1,3 @@
-
 local get = function(x)
 	return game:GetService(x)
 end
@@ -267,7 +266,6 @@ end)
 
 
 
-
 local Connections = {}
 local Objects = {}
 
@@ -315,7 +313,7 @@ end
 
 local Library = {}
 local Defaults = {
-	MainOutlineColor = Color3_fromRGB(231, 125, 125),
+	MainOutlineColor = Color3_fromRGB(math.random(1,255), math.random(1,255), math.random(1,255)),
 	MainFrameColor = Color3_fromRGB(24, 24, 24),
 	TitleColor = Color3_fromRGB(16, 16, 16),
 	ButtonColor = Color3_fromRGB(32, 32, 32),
@@ -1098,12 +1096,16 @@ function Library:CreateWindow(Title, X, Y, TitleHeight)
 	return Window
 end
 
+
+
+
 local MainWindow = Library:CreateWindow("Football Fusion 2", 500, 620, 32)
 local Catching = MainWindow:CreateCategory("Catching")
 local Physics = MainWindow:CreateCategory("Physics")
 local QB = MainWindow:CreateCategory("QB")
-local Football = MainWindow:CreateCategory("Football")
-local Settings = MainWindow:CreateCategory("Settings")
+local Visuals = MainWindow:CreateCategory("Visuals")
+local Extras = MainWindow:CreateCategory("Trolling")
+
 
 Catching:CreateSlider("Mags Distance",1,100,0,function(value)
 	distance = value
@@ -1138,6 +1140,34 @@ Catching:CreateToggle("Football Reach (Mag Script)",false,function(value)
 		end
 	end)
 end)
+
+
+
+Catching:CreateToggle("Stable Football Mags (Use if you crash with normal mags)",false,function(value)
+	_G.tog2 = value
+	magging = nil;
+
+	uis.InputBegan:Connect(function(key,gp)
+		if  key.UserInputType == Enum.UserInputType.MouseButton1 or key.KeyCode == Enum.KeyCode.ButtonR2 and gp == false and status.Value == "InPlay" and isQB == false and _G.tog2 == true then
+			for _,k in pairs(game:GetService("Workspace"):GetChildren()) do
+				if k.Name == "Football" and k.ClassName == "Part" then
+					for i = 1,60 do wait()
+						magging = true
+						if game:GetService("Players").LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and (game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.Position - k.Position).Magnitude <= distance and status.Value == "InPlay" and isQB == false and _G.tog2 == true then
+							if gp == false then
+								k.CFrame = CFrame.new(game:GetService("Players").LocalPlayer.Character.Head.Position)
+
+								k.CanCollide = false
+							end
+						end
+					end
+					magging = false
+				end
+			end
+		end
+	end)
+end)
+
 
 
 
@@ -1199,7 +1229,7 @@ Physics:CreateToggle("Auto Jump",false,function(value)
 				until tog3 == false
 				while rstep:wait() do
 					if tog3 == true then
-						local fb = ws:FindFirstChild("Football")
+						local fb = workspace:FindFirstChild("Football")
 						if status.Value == "InPlay" and fb then
 							local fbpos = fb.Position
 							if fbpos.Y >= 7 and fbpos.Y <= hrp.Position.Y + getJumpHeightFromJumpPower() + 10 then
@@ -1299,125 +1329,6 @@ Physics:CreateToggle("Forward Teleport 2 Studs, Keybind is F",false,function(val
 end)
 
 
-Physics:CreateToggle("Upwards Teleport 10 Studs In The Air, Keybind is U",false,function(value)
-	upwardtp = value
-
-	local Players = game:GetService("Players")
-	local ContextActionService = game:GetService("ContextActionService")
-
-	local function doTeleport()
-		if upwardtp == true then
-			local player = Players.LocalPlayer
-			local character = player.Character
-			if character and character.Parent then
-				local currentPivot = character:GetPivot()
-				character:PivotTo(currentPivot * CFrame.new(0, 10, 0))
-			end
-		end
-	end
-	_G.tog = value
-	if _G.tog == true  then
-		ContextActionService:BindAction("Teleport", doTeleport, true, Enum.KeyCode.U)
-	else
-		ContextActionService:UnbindAction("Teleport")
-	end
-end)
-
-Physics:CreateToggle("Downwards Teleport 10 Studs Down, Keybind is C",false,function(value)
-	upwardtp = value
-
-	local Players = game:GetService("Players")
-	local ContextActionService = game:GetService("ContextActionService")
-
-	local function doTeleport()
-		if upwardtp == true then
-			local player = Players.LocalPlayer
-			local character = player.Character
-			if character and character.Parent then
-				local currentPivot = character:GetPivot()
-				character:PivotTo(currentPivot * CFrame.new(0, -10, 0))
-			end
-		end
-	end
-	_G.tog = value
-	if _G.tog == true  then
-		ContextActionService:BindAction("Teleport", doTeleport, true, Enum.KeyCode.C)
-	else
-		ContextActionService:UnbindAction("Teleport")
-	end
-end)
-
-Physics:CreateToggle("Left Teleport 2 Studs To The Left, Keybind is L",false,function(value)
-	Left = value
-
-	local Players = game:GetService("Players")
-	local ContextActionService = game:GetService("ContextActionService")
-
-	local function doTeleport()
-		if Left == true then
-			local player = Players.LocalPlayer
-			local character = player.Character
-			if character and character.Parent then
-				local currentPivot = character:GetPivot()
-				character:PivotTo(currentPivot * CFrame.new(-2, 0, 0))
-			end
-		end
-	end
-	_G.tog = value
-	if _G.tog == true  then
-		ContextActionService:BindAction("Teleport", doTeleport, true, Enum.KeyCode.L)
-	else
-		ContextActionService:UnbindAction("Teleport")
-	end
-end)
-
-Physics:CreateToggle("Right Teleport 2 Studs To The Right, Keybind is R",false,function(value)
-	Right = value
-
-	local Players = game:GetService("Players")
-	local ContextActionService = game:GetService("ContextActionService")
-
-	local function doTeleport()
-		if Right == true then
-			local player = Players.LocalPlayer
-			local character = player.Character
-			if character and character.Parent then
-				local currentPivot = character:GetPivot()
-				character:PivotTo(currentPivot * CFrame.new(2, 0, 0))
-			end
-		end
-	end
-	_G.tog = value
-	if _G.tog == true  then
-		ContextActionService:BindAction("Teleport", doTeleport, true, Enum.KeyCode.R)
-	else
-		ContextActionService:UnbindAction("Teleport")
-	end
-end)
-
-Physics:CreateToggle("Backwards Teleport 2 Studs To Backwards, Keybind is B",false,function(value)
-	Backwards = value
-
-	local Players = game:GetService("Players")
-	local ContextActionService = game:GetService("ContextActionService")
-
-	local function doTeleport()
-		if Backwards == true then
-			local player = Players.LocalPlayer
-			local character = player.Character
-			if character and character.Parent then
-				local currentPivot = character:GetPivot()
-				character:PivotTo(currentPivot * CFrame.new(0, 0, 2))
-			end
-		end
-	end
-	_G.tog = value
-	if _G.tog == true  then
-		ContextActionService:BindAction("Teleport", doTeleport, true, Enum.KeyCode.B)
-	else
-		ContextActionService:UnbindAction("Teleport")
-	end
-end)
 
 
 Physics:CreateButton("Anti Jam",function()
@@ -1434,7 +1345,7 @@ Physics:CreateButton("Anti Jam",function()
 						local oldCanCllide = v.CanCollide
 						while step:wait() and v:IsA("BasePart") do
 							local enabled = tog3
-							if enabled and ws:FindFirstChild("Football") and status.Value == "InPlay" and playtype.Value ~= "fieldgoal" then
+							if enabled and workspace:FindFirstChild("Football") and status.Value == "InPlay" and playtype.Value ~= "fieldgoal" then
 								v.CanCollide = false
 							else
 								v.CanCollide = oldCanCllide
@@ -1463,8 +1374,22 @@ function create(class, parent, props, children)
 	end
 	return thing
 end
-
 Catching:CreateToggle("Pull Vector",false,function(value)
+	pullvector = value
+	game:GetService("UserInputService").InputBegan:Connect(function(key,gp)
+		if key.UserInputType == Enum.UserInputType.MouseButton1 and pullvector == true and gp == false then
+			if workspace:FindFirstChild("Football") and status.Value == "InPlay" then
+				if (workspace:FindFirstChild("Football").Position - game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= pulldist and gp == false then
+					if workspace:FindFirstChild("Football") and (workspace:FindFirstChild("Football").Position - game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= pulldist and status.Value == "InPlay" then
+						game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(workspace:FindFirstChild("Football").Position)
+					end
+				end
+			end
+		end
+	end)
+end)
+
+Catching:CreateToggle("Experimental Pull Vector (May be buggy and detected)",false,function(value)
 	pullvector = value
 
 	local function getball()
@@ -1561,6 +1486,163 @@ Catching:CreateToggle("Pull Vector",false,function(value)
 		end
 	end)
 end)
+
+local ESP = loadstring(game:HttpGet("https://kiriot22.com/releases/ESP.lua"))()
+
+
+
+Visuals:CreateToggle("Football ESP",false,function(value)
+
+
+
+
+	ESP:AddObjectListener(workspace, {
+		Name = "Football",
+		CustomName = "Football",
+		Color = Color3.fromRGB(255,255,255),
+		IsEnabled = "FootballESP"
+	})
+
+	ESP.FootballESP = true
+
+	footballesp = value
+	ESP:Toggle(footballesp)
+end)
+
+Visuals:CreateToggle("Player ESP",false,function(value)
+	players = value
+	if not ESP.FootballESP == true then
+		ESP:Toggle(true)
+	end
+
+	ESP.Players = players
+end)
+
+Visuals:CreateToggle("ESP Boxes",false,function(value)
+	ESP.Boxes = value
+end)
+Visuals:CreateToggle("Use Team Color",false,function(value)
+	ESP.TeamColor = value
+end)
+
+local SkyWeather = game.Workspace.SkyWeather
+Visuals:CreateToggle("Change Weather To Snow",false,function(value)
+	isSnow = value 
+
+	if isSnow  == true then
+
+
+		for i,v in pairs(SkyWeather:GetChildren()) do
+			if v.Name == "Snow" then
+				v.Enabled = true
+			end
+		end
+	else
+		for i,v in pairs(SkyWeather:GetChildren()) do
+			if v.Name == "Snow" then
+				v.Enabled = false
+			end
+		end
+	end
+end)
+
+Visuals:CreateToggle("Change Weather To Rain",false,function(value)
+	isRain = value 
+	
+	local Raining = game.Workspace.Models.Field.Ground
+	
+	if isRain  == true then
+		for i,v in pairs(SkyWeather:GetChildren()) do
+			if v.Name == "Rain" then
+				v.Enabled = true
+			end
+		end
+	elseif isRain == false  then
+		for i,v in pairs(SkyWeather:GetChildren()) do
+			if v.Name == "Rain" then
+				v.Enabled = false
+			end
+		end
+	end
+end)
+
+Extras:CreateToggle("Advertise Script in Chat",false,function(value)
+	Advertise = value
+
+end)
+
+spawn(function()
+	while true do wait(2)
+		if Advertise then
+			local ohString1 = "use cheeto hub for the best hacks for football fusion 2, inv: .gg/Cp4U3xtApN"
+			local ohString2 = "All"
+
+			game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer(ohString1, ohString2)
+		end
+	end
+end)
+
+local oldCanCollide = workspace:FindFirstChild("ScrambleWall").CanCollide
+
+Extras:CreateToggle("No QB Boundaries",false,function(value)
+	boundaries = value 
+
+	if boundaries  == true then
+		workspace:FindFirstChild("ScrambleWall").CanCollide = false
+	else
+		workspace:FindFirstChild("ScrambleWall").CanCollide = oldCanCollide
+	end
+end)
+local oldParent = workspace.Models
+
+Extras:CreateToggle("No Out Of Bounds",false,function(value)
+	bounds = value
+
+	if bounds == true then
+		if workspace.Models:FindFirstChild("Boundaries") then
+			workspace.Models:FindFirstChild("Boundaries").Parent = game:GetService("BadgeService")
+		elseif bounds == false then
+			game:GetService("BadgeService"):FindFirstChild("Boundaries").Parent = workspace.Models
+		end
+	end           
+end)
+
+
+
+Catching:CreateToggle("Increased Football Size",false,function(value)
+	fbsize = value
+end)
+
+spawn(function()
+	while true do wait()
+		if fbsize == true and workspace:FindFirstChild("Football") then
+			workspace:FindFirstChild('Football').Size = Vector3.new(10,10,10)
+		elseif fbsize == false and workspace:FindFirstChild("Football") then
+			workspace:FindFirstChild("Football").Size = Vector3.new(0.85, 1.2, 0.85)
+		end
+	end
+end)
+
+Extras:CreateToggle("Tackle Aimbot",false,function(value)
+	tacklebot = value
+	local hrp = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
+	local uis = game:GetService("UserInputService")
+
+	uis.InputBegan:Connect(function(key,gp)
+		if key.UserInputType == Enum.UserInputType.MouseButton1 then
+			for i,v in pairs(game:GetService("Players"):GetPlayers()) do
+				if game:GetService("ReplicatedStorage").Values.Carrier.Value ~= nil and tacklebot then
+					if v == game:GetService("ReplicatedStorage").Values.Carrier.Value and v.TeamColor ~= game:GetService("Players").LocalPlayer.TeamColor then
+						if (hrp.Position - v.Character.HumanoidRootPart.Position).Magnitude <= 12 and tacklebot then
+							hrp.CFrame = CFrame.new(v.Character.HumanoidRootPart.Position)
+						end
+					end
+				end
+			end
+		end
+	end)
+end)
+
 
 MainWindow:Init()
 MainWindow:ChangeCategory(Main)
